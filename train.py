@@ -7,7 +7,7 @@ from tqdm import tqdm
 from mypath import Path
 from dataloaders import make_data_loader
 from modeling.sync_batchnorm.replicate import patch_replication_callback
-from modeling.deeplab import *deeplab, 
+from modeling.deeplab import *
 from utils.loss import SegmentationLosses
 from utils.calculate_weights import calculate_weigths_labels
 from utils.lr_scheduler import LR_Scheduler
@@ -112,9 +112,9 @@ class Trainer(object):
             self.writer.add_scalar('train/total_loss_iter', loss.item(), i + num_img_tr * epoch)
 
             # Show 10 * 3 inference results each epoch
-            if i % (num_img_tr // 10) == 0:
-                global_step = i + num_img_tr * epoch
-                self.summary.visualize_image(self.writer, self.args.dataset, image, target, output, global_step)
+            # if i % (num_img_tr // 10) == 0:
+            #     global_step = i + num_img_tr * epoch
+            #     self.summary.visualize_image(self.writer, self.args.dataset, image, target, output, global_step)
 
         self.writer.add_scalar('train/total_loss_epoch', train_loss, epoch)
         print('[Epoch: %d, numImages: %5d]' % (epoch, i * self.args.batch_size + image.data.shape[0]))
@@ -172,7 +172,7 @@ class Trainer(object):
             self.best_pred = new_pred
             self.saver.save_checkpoint({
                 'epoch': epoch + 1,
-                'state_dict': self.model.module.state_dict(),
+                'state_dict': self.model.state_dict(),
                 'optimizer': self.optimizer.state_dict(),
                 'best_pred': self.best_pred,
             }, is_best)
@@ -304,8 +304,8 @@ def main():
     input_names = [ "input_1" ]
     output_names = [ "output1" ]
     today = datetime.date.today()
-    model_name = "deeplab" + today + ".onnx"
-    torch.onnx.export(trainer.model, dummy_input, "trained_model/" + model_name, verbose=True, input_names=input_names, output_names=output_names, opset_version=11)
+    model_name = "deeplab-" + str(today) + ".onnx"
+    torch.onnx.export(trainer.model, dummy_input, "trained_model/" +model_name, verbose=True, input_names=input_names, output_names=output_names, opset_version=11)
 
 if __name__ == "__main__":
    main()
