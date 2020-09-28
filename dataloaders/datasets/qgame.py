@@ -33,5 +33,5 @@ class QGameSegmentation(Dataset):
         return {'image': torch_img, 'label': mask}
 
     def __len__(self):
-        # return len(self.items)
-        return 32
+        return len(self.items)
+        # return 32
