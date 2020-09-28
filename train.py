@@ -1,4 +1,5 @@
 import argparse
+from datetime import date
 import os
 import numpy as np
 from tqdm import tqdm
@@ -6,13 +7,14 @@ from tqdm import tqdm
 from mypath import Path
 from dataloaders import make_data_loader
 from modeling.sync_batchnorm.replicate import patch_replication_callback
-from modeling.deeplab import *
+from modeling.deeplab import *deeplab, 
 from utils.loss import SegmentationLosses
 from utils.calculate_weights import calculate_weigths_labels
 from utils.lr_scheduler import LR_Scheduler
 from utils.saver import Saver
 from utils.summaries import TensorboardSummary
 from utils.metrics import Evaluator
+import datetime
 
 class Trainer(object):
     def __init__(self, args):
@@ -183,7 +185,7 @@ def main():
     parser.add_argument('--out-stride', type=int, default=16,
                         help='network output stride (default: 8)')
     parser.add_argument('--dataset', type=str, default='pascal',
-                        choices=['pascal', 'coco', 'cityscapes'],
+                        choices=['pascal', 'coco', 'cityscapes', 'qgame'],
                         help='dataset name (default: pascal)')
     parser.add_argument('--use-sbd', action='store_true', default=True,
                         help='whether to use SBD dataset (default: True)')
@@ -298,6 +300,12 @@ def main():
             trainer.validation(epoch)
 
     trainer.writer.close()
+    dummy_input = torch.randn(1, 3, 256, 256)
+    input_names = [ "input_1" ]
+    output_names = [ "output1" ]
+    today = datetime.date.today()
+    model_name = "deeplab" + today + ".onnx"
+    torch.onnx.export(trainer.model, dummy_input, "trained_model/" + model_name, verbose=True, input_names=input_names, output_names=output_names, opset_version=11)
 
 if __name__ == "__main__":
    main()
