@@ -302,12 +302,12 @@ def main():
             trainer.validation(epoch)
 
     trainer.writer.close()
-    dummy_input = torch.randn(1, 3, 256, 256)
+    dummy_input = torch.randn(1, 3, 256, 256).cuda()
     input_names = [ "input_1" ]
     output_names = [ "output1" ]
     today = datetime.date.today()
     model_name = "deeplab-" + str(today) + ".onnx"
-    torch.onnx.export(trainer.model, dummy_input, "trained_model/" +model_name, verbose=True, input_names=input_names, output_names=output_names, opset_version=11)
+    torch.onnx.export(trainer.model.module, dummy_input, "trained_model/" +model_name, verbose=True, input_names=input_names, output_names=output_names, opset_version=11)
 
 if __name__ == "__main__":
    main()
