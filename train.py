@@ -252,7 +252,7 @@ def main():
 
     args = parser.parse_args()
     args.cuda = not args.no_cuda and torch.cuda.is_available()
-    print(args.cuda)
+    print("args: " + str(args.no_cuda) + "torch.cuda = " + str(torch.cuda.is_available()))
     if args.cuda:
         try:
             args.gpu_ids = [int(s) for s in args.gpu_ids.split(',')]
