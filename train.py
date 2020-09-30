@@ -302,7 +302,9 @@ def main():
             trainer.validation(epoch)
 
     trainer.writer.close()
-    dummy_input = torch.randn(1, 3, 256, 256).cuda()
+    dummy_input = torch.randn(1, 3, 256, 256)
+    if(args.cuda):
+        dummy_input = dummy_input.cuda()
     input_names = [ "input_1" ]
     output_names = [ "output1" ]
     today = datetime.date.today()

@@ -8,6 +8,8 @@ import cv2
 root_path = "QGameData/"
 file_path = "live_more_"
 nClasses = 5
+mean=(0.485, 0.456, 0.406)
+std=(0.229, 0.224, 0.225)
 class QGameSegmentation(Dataset):
     def __init__(self, width, height, split):
         self.width = width
@@ -26,7 +28,11 @@ class QGameSegmentation(Dataset):
         im = img
         lim = label_img
         lim = lim[:, :, 0]
-        im = np.float32(im) / 127.5 - 1
+        im = np.array(im).astype(np.float32)
+        lim = np.array(lim).astype(np.float32)
+        im /= 255.0
+        im -= mean
+        im /= std
         im = np.transpose(im, [2, 0, 1])
         torch_img = torch.from_numpy(im).float()
         mask = torch.from_numpy(lim).float()
